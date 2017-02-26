@@ -26,7 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
 
 #ifdef DEBUG_MY9291
-    #define DEBUG_MSG_MY9291(...) DEBUG_MY9291.printf( __VA_ARGS__ )
+    #if ARDUINO_ARCH_ESP8266
+        #define DEBUG_MSG_MY9291(...) DEBUG_MY9291.printf( __VA_ARGS__ )
+    #elif ARDUINO_ARCH_AVR
+        #define DEBUG_MSG_MY9291(...) { char buffer[81]; snprintf(buffer, 80,  __VA_ARGS__ ); DEBUG_MY9291.print(buffer); }
+    #endif
 #else
     #define DEBUG_MSG_MY9291(...)
 #endif

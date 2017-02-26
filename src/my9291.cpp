@@ -1,6 +1,6 @@
 /*
 
-MY9291 LED Driver Arduino library 1.0.0
+MY9291 LED Driver Arduino library 1.0.1
 Based on the C driver by MaiKe Labs
 
 Copyright (c) 2016 - 2026 MaiKe Labs
@@ -23,9 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "my9291.h"
 
-extern "C" {
-    void os_delay_us(unsigned int);
-}
+#if ARDUINO_ARCH_ESP8266
+
+    extern "C" {
+        void os_delay_us(unsigned int);
+    }
+
+#elif ARDUINO_ARCH_AVR
+
+    #define os_delay_us delayMicroseconds
+
+#endif
 
 void my9291::_di_pulse(unsigned int times) {
 	unsigned int i;
