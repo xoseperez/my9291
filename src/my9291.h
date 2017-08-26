@@ -1,6 +1,6 @@
 /*
 
-MY9291 LED Driver Arduino library 0.1.0
+MY9291 LED Driver Arduino library 2.0.0
 
 Copyright (c) 2016 - 2026 MaiKe Labs
 Copyright (C) 2017 - Xose Pérez
@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #if ARDUINO_ARCH_ESP8266
         #define DEBUG_MSG_MY9291(...) DEBUG_MY9291.printf( __VA_ARGS__ )
     #elif ARDUINO_ARCH_AVR
-        #define DEBUG_MSG_MY9291(...) { char buffer[81]; snprintf(buffer, 80,  __VA_ARGS__ ); DEBUG_MY9291.print(buffer); }
+        #define DEBUG_MSG_MY9291(...) { char buffer[80]; snprintf(buffer, sizeof(buffer),  __VA_ARGS__ ); DEBUG_MY9291.print(buffer); }
     #endif
 #else
     #define DEBUG_MSG_MY9291(...)
@@ -78,6 +78,7 @@ typedef struct {
     unsigned int green;
     unsigned int blue;
     unsigned int white;
+    unsigned int warm;
 } my9291_color_t;
 
 #define MY9291_COMMAND_DEFAULT { \
@@ -93,7 +94,7 @@ class my9291 {
 
     public:
 
-        my9291(unsigned char di, unsigned char dcki, my9291_cmd_t command);
+        my9291(unsigned char di, unsigned char dcki, my9291_cmd_t command, unsigned char channels = 4);
         void setColor(my9291_color_t color);
         my9291_color_t getColor();
         void setState(bool state);
@@ -105,10 +106,12 @@ class my9291 {
         void _dcki_pulse(unsigned int times);
         void _set_cmd(my9291_cmd_t command);
         void _send();
+        void _write(unsigned int data, unsigned char bit_length);
 
         my9291_cmd_t _command;
+        unsigned char _channels = 4;
         bool _state = false;
-        my9291_color_t _color = {0, 0, 0, 0};
+        my9291_color_t _color = {0, 0, 0, 0, 0};
         unsigned char _pin_di;
         unsigned char _pin_dcki;
 

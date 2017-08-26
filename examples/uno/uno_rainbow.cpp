@@ -4,18 +4,19 @@
 #define MY9291_DCKI_PIN     15
 #define RAINBOW_DELAY       10
 
-my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT);
+// MY9291 with 4 channels (like the AiThinker Ai-Light)
+my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT, 4);
 
 void rainbow(unsigned char index) {
 
     if (index < 85) {
-        _my9291.setColor((my9291_color_t) { (unsigned int) index * 3, (unsigned int) 255 - index * 3, 0, 0 });
+        _my9291.setColor((my9291_color_t) { (unsigned int) index * 3, (unsigned int) 255 - index * 3, 0, 0, 0 });
     } else if (index < 170) {
         index -= 85;
-        _my9291.setColor((my9291_color_t) { (unsigned int) 255 - index * 3, 0, (unsigned int) index * 3, 0 });
+        _my9291.setColor((my9291_color_t) { (unsigned int) 255 - index * 3, 0, (unsigned int) index * 3, 0, 0 });
     } else {
         index -= 170;
-        _my9291.setColor((my9291_color_t) { 0, (unsigned int) index * 3, (unsigned int) 255 - index * 3, 0 });
+        _my9291.setColor((my9291_color_t) { 0, (unsigned int) index * 3, (unsigned int) 255 - index * 3, 0, 0 });
     }
 
 }
