@@ -33,7 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     #define os_delay_us delayMicroseconds
 
+#else
+    #define os_delay_us delayMicroseconds
 #endif
+
 
 void my9291::_di_pulse(unsigned int times) {
 	for (unsigned int i = 0; i < times; i++) {
@@ -103,14 +106,23 @@ void my9291::_send() {
 	// Color to show
 	unsigned int duty[6] = {0};
 	if (_state) {
-        if (_channels == 4) {
+        if (_channels == 3) {
+            duty[0] = _color.red;
+            duty[1] = _color.green;
+            duty[2] = _color.blue;
+            duty[3] = 0;
+            duty[4] = 0;
+            duty[5] = 0;
+        } 
+        else if (_channels == 4) {
             duty[0] = _color.red;
             duty[1] = _color.green;
             duty[2] = _color.blue;
             duty[3] = _color.white;
             duty[4] = 0;
             duty[5] = 0;
-        } else {
+        } 
+        else {
             duty[0] = _color.white;
             duty[1] = _color.warm;
             duty[2] = 0;
@@ -145,7 +157,8 @@ void my9291::_send() {
 	os_delay_us(12);
 
     // Send color data
-    unsigned int length = (_channels == 4) ? 4 : 6;
+    // unsigned int length = (_channels == 4) ? 4 : 6;
+    unsigned int length = _channels;
     for (unsigned char channel = 0; channel < length; channel++) {
         _write(duty[channel], bit_length);
 	}
@@ -197,6 +210,7 @@ my9291::my9291(unsigned char di, unsigned char dcki, my9291_cmd_t command, unsig
 	_pin_dcki = dcki;
     _command = command;
     if (channels == 4 || channels == 5) _channels = channels;
+    else _channels = channels;
 
 	pinMode(_pin_di, OUTPUT);
 	pinMode(_pin_dcki, OUTPUT);
@@ -204,8 +218,10 @@ my9291::my9291(unsigned char di, unsigned char dcki, my9291_cmd_t command, unsig
 	digitalWrite(_pin_di, LOW);
 	digitalWrite(_pin_dcki, LOW);
 
-	// Clear all duty register
-    if (_channels == 4) {
+    // Clear all duty register
+    if (_channels == 3) {
+        _dcki_pulse(24);
+    } else if (_channels == 4) {
        	_dcki_pulse(32);
     } else {
        	_dcki_pulse(64);
